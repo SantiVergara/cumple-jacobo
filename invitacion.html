@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Boarding Pass — 3er cumpleaños de Jacobo ✈</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -24,8 +24,7 @@
     }
 
     html, body {
-      height: 100%;
-      overflow: hidden;
+      min-height: 100%;
       font-family: "Nunito", sans-serif;
       background: #0d2137;
     }
@@ -35,10 +34,29 @@
       position: relative;
       width: 100%;
       max-width: 430px;
-      height: 100dvh;
+      min-height: 100dvh;
+      min-height: 100svh;
       margin: 0 auto;
-      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       background: linear-gradient(180deg, var(--sky-light) 0%, var(--sky) 35%, var(--sky-deep) 100%);
+    }
+
+    .content-stack {
+      position: relative;
+      z-index: 2;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(6px, 1.2vh, 12px);
+      padding:
+        max(10px, env(safe-area-inset-top))
+        16px
+        max(12px, env(safe-area-inset-bottom));
     }
 
     /* ── Nubes ── */
@@ -208,7 +226,8 @@
       position: relative;
       z-index: 2;
       text-align: center;
-      padding: 14% 20px 0;
+      padding: clamp(36px, 8vh, 64px) 4px 0;
+      flex-shrink: 0;
       animation: fade-down 1s ease-out 0.3s both;
     }
     .header-badge {
@@ -229,7 +248,7 @@
       50%      { transform: scale(1.05); }
     }
     .header h1 {
-      font-size: 1.55rem;
+      font-size: clamp(1.25rem, 5.5vw, 1.55rem);
       font-weight: 900;
       color: var(--white);
       text-shadow: 0 2px 8px rgba(26,58,82,0.25);
@@ -239,7 +258,7 @@
       color: var(--yellow);
     }
     .header p {
-      font-size: 0.88rem;
+      font-size: clamp(0.78rem, 3.4vw, 0.88rem);
       color: rgba(255,255,255,0.95);
       font-weight: 700;
       margin-top: 6px;
@@ -247,27 +266,26 @@
       max-width: 280px;
       margin-left: auto;
       margin-right: auto;
+      padding: 0 4px;
     }
 
     /* ── Foto del cumpleañero ── */
     .captain-spot {
-      position: absolute;
-      top: 27%;
-      left: 50%;
-      transform: translateX(-50%);
+      position: relative;
       z-index: 8;
       text-align: center;
+      flex-shrink: 0;
       animation: captain-in 1s cubic-bezier(0.22, 1, 0.36, 1) 0.85s both;
     }
 
     @keyframes captain-in {
-      from { opacity: 0; transform: translateX(-50%) translateY(16px) scale(0.85); }
-      to   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+      from { opacity: 0; transform: translateY(16px) scale(0.85); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     .photo-frame {
-      width: 92px;
-      height: 92px;
+      width: clamp(72px, 18vw, 92px);
+      height: clamp(72px, 18vw, 92px);
       border-radius: 50%;
       border: 3px solid var(--yellow);
       box-shadow:
@@ -341,20 +359,18 @@
 
     /* ── Boarding Pass ── */
     .pass-container {
-      position: absolute;
-      top: 41%;
-      bottom: auto;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 92%;
+      position: relative;
+      width: 100%;
       max-width: 390px;
       z-index: 10;
+      margin-top: auto;
+      flex-shrink: 0;
       animation: pass-rise 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
     }
 
     @keyframes pass-rise {
-      from { opacity: 0; transform: translateX(-50%) translateY(120px) rotateX(12deg); }
-      to   { opacity: 1; transform: translateX(-50%) translateY(0) rotateX(0); }
+      from { opacity: 0; transform: translateY(80px) rotateX(12deg); }
+      to   { opacity: 1; transform: translateY(0) rotateX(0); }
     }
 
     .boarding-pass {
@@ -417,29 +433,136 @@
 
     /* Cuerpo del pase */
     .pass-body {
-      padding: 16px 18px 12px;
+      padding: 14px 16px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
-    .field-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px 12px;
-    }
-
-    .field {
+    .pass-section {
       animation: field-in 0.6s ease-out both;
     }
-    .field:nth-child(1) { animation-delay: 1.0s; }
-    .field:nth-child(2) { animation-delay: 1.1s; }
-    .field:nth-child(3) { animation-delay: 1.2s; }
-    .field:nth-child(4) { animation-delay: 1.3s; }
-    .field:nth-child(5) { animation-delay: 1.4s; }
-    .field:nth-child(6) { animation-delay: 1.5s; }
-    .field.full { grid-column: 1 / -1; }
+    .pass-section--passenger { animation-delay: 1.0s; }
+    .pass-section--flight    { animation-delay: 1.15s; }
+    .pass-section--route     { animation-delay: 1.3s; }
 
-    @keyframes field-in {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
+    /* Pasajero */
+    .pass-section--passenger {
+      display: grid;
+      gap: 8px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e8f2f8;
+    }
+
+    .field-passenger .value.guest {
+      font-size: clamp(1.08rem, 4.8vw, 1.28rem);
+      line-height: 1.15;
+    }
+
+    .field-companion .value {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--ink-muted);
+    }
+
+    /* Panel vuelo — grid 2×2 estilo aeropuerto */
+    .flight-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border: 1.5px solid #d4e8f2;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #f8fcff;
+    }
+
+    .flight-cell {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e3eef5;
+      min-width: 0;
+    }
+
+    .flight-cell:nth-child(odd) {
+      border-right: 1px solid #e3eef5;
+    }
+
+    .flight-cell:nth-child(3),
+    .flight-cell:nth-child(4) {
+      border-bottom: none;
+      background: rgba(229, 57, 53, 0.045);
+    }
+
+    .flight-cell label {
+      display: block;
+      font-size: 0.54rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      margin-bottom: 3px;
+    }
+
+    .flight-cell .value {
+      font-size: 0.96rem;
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1.15;
+    }
+
+    .flight-cell .value.mono {
+      font-family: "Share Tech Mono", monospace;
+      font-size: 0.98rem;
+      letter-spacing: 0.03em;
+    }
+
+    .flight-cell .value.highlight {
+      color: var(--red);
+    }
+
+    .flight-cell--key .value {
+      font-size: 1.2rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+    }
+
+    /* Destino y embarque */
+    .route-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 12px;
+      align-items: start;
+    }
+
+    .route-panel .field label {
+      display: block;
+      font-size: 0.58rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      margin-bottom: 2px;
+    }
+
+    .route-panel .field .value {
+      font-size: 0.94rem;
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1.25;
+    }
+
+    .route-panel .field:first-child .value {
+      color: var(--sky-deep);
+    }
+
+    .route-panel .field:last-child {
+      grid-column: 1 / -1;
+      padding-top: 2px;
+      border-top: 1px dashed #dceaf2;
+    }
+
+    .route-panel .field:last-child .value {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--ink-muted);
     }
 
     .field label {
@@ -461,8 +584,10 @@
       color: var(--red);
     }
     .field .value.guest {
-      font-size: 1.15rem;
+      font-size: clamp(0.95rem, 4.2vw, 1.15rem);
       color: var(--red);
+      word-break: break-word;
+      hyphens: auto;
     }
     .field .value.placeholder {
       color: var(--ink-muted);
@@ -473,6 +598,11 @@
       font-family: "Share Tech Mono", monospace;
       font-size: 1.02rem;
       letter-spacing: 0.04em;
+    }
+
+    @keyframes field-in {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     /* Línea de perforación */
@@ -517,33 +647,64 @@
       color: var(--ink-muted);
     }
 
-    /* Código de barras animado */
-    .barcode {
+    /* Código de barras Code 128 */
+    .barcode-wrap {
       display: flex;
-      gap: 2px;
-      align-items: flex-end;
-      height: 42px;
+      flex-direction: column;
+      align-items: center;
       flex-shrink: 0;
+      min-width: 0;
     }
-    .barcode span {
-      display: block;
-      width: 3px;
-      background: var(--ink);
-      border-radius: 1px;
-      animation: bar-pulse 2s ease-in-out infinite;
-    }
-    .barcode span:nth-child(odd)  { animation-delay: calc(var(--i, 0) * 0.05s); }
-    .barcode span:nth-child(even) { animation-delay: calc(var(--i, 0) * 0.08s); }
 
-    @keyframes bar-pulse {
-      0%, 100% { opacity: 0.7; }
-      50%      { opacity: 1; }
+    .barcode {
+      position: relative;
+      background: var(--white);
+      padding: 2px 4px;
+      border-radius: 2px;
+      line-height: 0;
+    }
+
+    .barcode svg {
+      display: block;
+      height: 44px;
+      width: auto;
+      max-width: 148px;
+    }
+
+    .barcode-caption {
+      font-family: "Share Tech Mono", monospace;
+      font-size: 0.48rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      color: var(--ink);
+      margin-top: 3px;
+      text-align: center;
+    }
+
+    .barcode::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(74, 159, 212, 0.35), transparent);
+      animation: scan-line 3.5s ease-in-out infinite;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    @keyframes scan-line {
+      0%, 12% { opacity: 0; top: 0; }
+      18% { opacity: 1; }
+      82% { opacity: 1; }
+      88%, 100% { opacity: 0; top: calc(100% - 2px); }
     }
 
     /* Footer RSVP */
     .rsvp {
       text-align: center;
-      padding: 0 18px 22px;
+      padding: 0 18px 14px;
       animation: field-in 0.6s ease-out 1.8s both;
     }
     .rsvp p {
@@ -587,18 +748,49 @@
 
     /* Hint para WhatsApp — oculto si ya hay invitado */
     .share-hint {
-      position: absolute;
-      bottom: 6px;
-      left: 0;
-      right: 0;
+      position: relative;
       text-align: center;
       font-size: 0.6rem;
       color: rgba(255,255,255,0.7);
       font-weight: 600;
       z-index: 20;
+      padding: 4px 16px max(10px, env(safe-area-inset-bottom));
+      flex-shrink: 0;
       animation: fade-down 1s ease 3s both;
     }
     .share-hint.hidden { display: none; }
+
+    /* Pantallas bajas (móvil con barra del navegador) */
+    @media (max-height: 740px) {
+      .header { padding-top: clamp(28px, 6vh, 48px); }
+      .header-badge { font-size: 0.58rem; padding: 4px 12px; margin-bottom: 6px; }
+      .header p { margin-top: 4px; }
+      .photo-caption { margin-top: 4px; font-size: 0.56rem; }
+      .pass-top { padding: 10px 14px; }
+      .pass-body { padding: 12px 14px 8px; gap: 10px; }
+      .pass-section--passenger { padding-bottom: 8px; }
+      .flight-cell { padding: 8px 10px; }
+      .flight-cell--key .value { font-size: 1.08rem; }
+      .flight-cell .value.mono { font-size: 0.9rem; }
+      .route-panel { gap: 8px 10px; }
+      .route-panel .field .value { font-size: 0.88rem; }
+      .pass-stub { padding: 10px 14px 14px; }
+      .barcode svg { height: 36px; max-width: 128px; }
+      .barcode-caption { font-size: 0.44rem; margin-top: 2px; }
+      .rsvp { padding: 0 14px 10px; }
+      .rsvp p { font-size: 0.68rem; line-height: 1.35; }
+      .pass-footer { padding: 8px 14px; font-size: 0.65rem; }
+      .plane-wrap { top: 6%; }
+      .plane-img { width: 100px; }
+    }
+
+    @media (max-height: 640px) {
+      .content-stack { gap: 4px; }
+      .header { padding-top: 24px; }
+      .photo-badge { width: 26px; height: 26px; font-size: 0.8rem; }
+      .airline-name { font-size: 1rem; }
+      .pass-type strong { font-size: 0.78rem; }
+    }
   </style>
 </head>
 <body>
@@ -687,21 +879,22 @@
     <div class="sparkle"></div>
     <div class="sparkle"></div>
 
+    <div class="content-stack">
     <header class="header">
       <div class="header-badge">✈ Abordaje autorizado</div>
       <h1>Jacobo cumple <span>3 años</span></h1>
-      <p>¡Capitán Jacobo te invita a subir a bordo!</p>
+      <p>¡El Capitán Jacobo te invita a subir a bordo!</p>
     </header>
 
     <div class="captain-spot">
       <div class="photo-frame">
         <div class="photo-inner">
-          <img id="foto-jacobo" src="jacobo.jpg" alt="Jacobo" hidden />
+          <img id="foto-jacobo" src="jacobo.png" alt="Jacobo" hidden />
           <div class="photo-placeholder" id="foto-placeholder">J</div>
         </div>
         <span class="photo-badge" aria-hidden="true">✈</span>
       </div>
-      <span class="photo-caption">Capitán del vuelo</span>
+      <span class="photo-caption">Capitán de vuelo</span>
     </div>
 
     <div class="pass-container">
@@ -721,32 +914,54 @@
         </div>
 
         <div class="pass-body">
-          <div class="field-grid">
-            <div class="field full">
+          <section class="pass-section pass-section--passenger">
+            <div class="field field-passenger">
               <label>Pasajero</label>
               <div class="value guest" id="invitado">—</div>
             </div>
-            <div class="field full">
+            <div class="field field-companion">
               <label>Acompañante</label>
-              <div class="value" id="acompanante">1 adulto </div>
+              <div class="value" id="acompanante">1 adulto</div>
             </div>
-            <div class="field">
-              <label>Check-in</label>
-              <div class="value mono" id="fecha">11 / 07 / 2026</div>
+          </section>
+
+          <section class="pass-section pass-section--flight">
+            <div class="flight-panel">
+              <div class="flight-cell">
+                <label>Check-in</label>
+                <div class="value mono" id="fecha">11 / 07 / 2026</div>
+              </div>
+              <div class="flight-cell">
+                <label>Hora de embarque</label>
+                <div class="value mono highlight" id="hora">16:00 hs</div>
+              </div>
+              <div class="flight-cell flight-cell--key">
+                <label>Puerta</label>
+                <div class="value mono highlight" id="puerta">3A</div>
+              </div>
+              <div class="flight-cell flight-cell--key">
+                <label>Asiento</label>
+                <div class="value mono highlight" id="asiento">VIP</div>
+              </div>
             </div>
-            <div class="field">
-              <label>Hora de embarque</label>
-              <div class="value mono highlight" id="hora">16:00 hs</div>
+          </section>
+
+          <section class="pass-section pass-section--route">
+            <div class="route-panel">
+              <div class="field">
+                <label>Destino</label>
+                <div class="value" id="destino">Cumpleaños # 3</div>
+              </div>
+              <div class="field">
+                <label>Vuelo</label>
+                <div class="value mono">BDAY-003</div>
+              </div>
+              <div class="field">
+                <label>Embarque</label>
+                <div class="value" id="embarque">Casa de Mamita Lucila</div>
+              </div>
             </div>
-            <div class="field full">
-              <label>Destino</label>
-              <div class="value" id="destino">Cumpleaños # 3</div>
-            </div>
-            <div class="field full">
-              <label>Embarque</label>
-              <div class="value" id="embarque">Casa de Mamita Lucila</div>
-            </div>
-          </div>
+          </section>
 
           <div class="perforation"></div>
         </div>
@@ -756,7 +971,10 @@
             <label>Código de vuelo</label>
             <div class="value">FELIZ-003</div>
           </div>
-          <div class="barcode" id="barcode" aria-hidden="true"></div>
+          <div class="barcode-wrap" aria-hidden="true">
+            <div class="barcode" id="barcode"></div>
+            <div class="barcode-caption">BDAY003</div>
+          </div>
         </div>
 
         <div class="rsvp">
@@ -765,6 +983,7 @@
 
         <div class="pass-footer">Primera clase</div>
       </article>
+    </div>
     </div>
 
     <p class="share-hint" id="share-hint">Usá generar.html para personalizar cada invitado</p>
@@ -778,11 +997,13 @@
       hora: "16:00 hs",
       destino: "Cumpleaños # 3",
       embarque: "Casa de Mamita Lucila",
+      puerta: "3A",
+      asiento: "VIP",
       invitado: "",
       acompanante: "1 adulto",
       avionImagen: "avion.png",
       avionInvertido: false,
-      fotoJacobo: "jacobo.jpg",
+      fotoJacobo: "jacobo.png",
     };
 
     const params = new URLSearchParams(window.location.search);
@@ -792,11 +1013,30 @@
       return valor && valor.trim() ? valor.trim() : fallback;
     }
 
+    function asientoDesdeNombre(nombre) {
+      let hash = 0;
+      for (let i = 0; i < nombre.length; i++) {
+        hash = (hash * 31 + nombre.charCodeAt(i)) >>> 0;
+      }
+      const fila = 1 + (hash % 15);
+      const letra = String.fromCharCode(65 + (hash % 6));
+      return `${String(fila).padStart(2, "0")}${letra}`;
+    }
+
     const invitado = leerParam("invitado", CONFIG.invitado);
     const acompanante = leerParam("acompanante", CONFIG.acompanante);
+    const puerta = leerParam("puerta", CONFIG.puerta);
+    const asientoParam = params.get("asiento");
+    const asiento = asientoParam && asientoParam.trim()
+      ? asientoParam.trim()
+      : invitado
+        ? asientoDesdeNombre(invitado)
+        : CONFIG.asiento;
 
     document.getElementById("fecha").textContent = CONFIG.fecha;
     document.getElementById("hora").textContent = CONFIG.hora;
+    document.getElementById("puerta").textContent = puerta;
+    document.getElementById("asiento").textContent = asiento;
     document.getElementById("destino").textContent = CONFIG.destino;
     document.getElementById("embarque").textContent = CONFIG.embarque;
 
@@ -863,15 +1103,77 @@
       probar(0);
     })();
 
-    // Generar código de barras decorativo
-    const barcode = document.getElementById("barcode");
-    const heights = [18, 28, 14, 36, 22, 40, 16, 32, 20, 38, 12, 30, 24, 42, 18, 34, 16, 28, 22, 36];
-    heights.forEach((h, i) => {
-      const bar = document.createElement("span");
-      bar.style.height = h + "px";
-      bar.style.setProperty("--i", i);
-      barcode.appendChild(bar);
-    });
+    // Código de barras Code 128 (estilo boarding pass real)
+    (function initBarcode() {
+      const CODE128 = [
+        "BaBbBb","BbBaBb","BbBbBa","AbAbBc","AbAcBb","AcAbBb","AbBbAc","AbBcAb","AcBbAb","BbAbAc",
+        "BbAcAb","BcAbAb","AaBbCb","AbBaCb","AbBbCa","AaCbBb","AbCaBb","AbCbBa","BbCbAa","BbAaCb",
+        "BbAbCa","BaCbAb","BbCaAb","CaBaCa","CaAbBb","CbAaBb","CbAbBa","CaBbAb","CbBaAb","CbBbAa",
+        "BaBaBc","BaBcBa","BcBaBa","AaAcBc","AcAaBc","AcAcBa","AaBcAc","AcBaAc","AcBcAa","BaAcAc",
+        "BcAaAc","BcAcAa","AaBaCc","AaBcCa","AcBaCa","AaCaBc","AaCcBa","AcCaBa","CaCaBa","BaAcCa",
+        "BcAaCa","BaCaAc","BaCcAa","BaCaCa","CaAaBc","CaAcBa","CcAaBa","CaBaAc","CaBcAa","CcBaAa",
+        "CaDaAa","BbAdAa","DcAaAa","AaAbBd","AaAdBb","AbAaBd","AbAdBa","AdAaBb","AdAbBa","AaBbAd",
+        "AaBdAb","AbBaAd","AbBdAa","AdBaAb","AdBbAa","BdAbAa","BbAaAd","DaCaAa","BdAaAb","AcDaAa",
+        "AaAbDb","AbAaDb","AbAbDa","AaDbAb","AbDaAb","AbDbAa","DaAbAb","DbAaAb","DbAbAa","BaBaDa",
+        "BaDaBa","DaBaBa","AaAaDc","AaAcDa","AcAaDa","AaDaAc","AaDcAa","DaAaAc","DaAcAa","AaCaDa",
+        "AaDaCa","CaAaDa","DaAaCa","BaAdAb","BaAbAd","BaAbCb","BcCaAaB"
+      ];
+
+      const DATA = "BDAY003";
+      const MODULE = 1.35;
+      const QUIET = 10;
+      const HEIGHT = 44;
+
+      function codigosCode128B(texto) {
+        const valores = [104];
+        for (const ch of texto) {
+          const code = ch.charCodeAt(0) - 32;
+          if (code < 0 || code > 94) continue;
+          valores.push(code);
+        }
+        let checksum = valores[0];
+        for (let i = 1; i < valores.length; i++) checksum += valores[i] * i;
+        valores.push(checksum % 103);
+        valores.push(106);
+        return valores;
+      }
+
+      function modulosDesdePatron(patron) {
+        return [...patron].map((ch) => ({
+          barra: ch >= "A" && ch <= "Z",
+          ancho: ch.toUpperCase().charCodeAt(0) - 64,
+        }));
+      }
+
+      const modulos = codigosCode128B(DATA).flatMap((code) =>
+        modulosDesdePatron(CODE128[code])
+      );
+
+      const anchoUtil = modulos.reduce((sum, m) => sum + m.ancho, 0);
+      const anchoTotal = (QUIET * 2 + anchoUtil) * MODULE;
+
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("viewBox", `0 0 ${anchoTotal} ${HEIGHT}`);
+      svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+      svg.setAttribute("role", "img");
+      svg.setAttribute("aria-label", `Código de barras ${DATA}`);
+
+      let x = QUIET * MODULE;
+      for (const mod of modulos) {
+        if (mod.barra) {
+          const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          rect.setAttribute("x", x.toFixed(2));
+          rect.setAttribute("y", "0");
+          rect.setAttribute("width", (mod.ancho * MODULE).toFixed(2));
+          rect.setAttribute("height", String(HEIGHT));
+          rect.setAttribute("fill", "#1a3a52");
+          svg.appendChild(rect);
+        }
+        x += mod.ancho * MODULE;
+      }
+
+      document.getElementById("barcode").appendChild(svg);
+    })();
   </script>
 </body>
 </html>
