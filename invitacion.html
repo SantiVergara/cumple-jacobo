@@ -352,6 +352,312 @@
       text-shadow: 0 1px 6px rgba(26, 58, 82, 0.35);
     }
 
+    .photo-hint {
+      display: block;
+      margin-top: 3px;
+      font-size: 0.52rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: rgba(255, 255, 255, 0.82);
+      text-shadow: 0 1px 4px rgba(26, 58, 82, 0.3);
+    }
+
+    .photo-hint.hidden { display: none; }
+
+    button.photo-frame {
+      cursor: pointer;
+      padding: 0;
+      font: inherit;
+      color: inherit;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button.photo-frame:not(:disabled):active {
+      transform: scale(0.96);
+    }
+
+    button.photo-frame:not(:disabled):hover {
+      box-shadow:
+        0 0 0 3px var(--red),
+        0 12px 32px rgba(26, 58, 82, 0.28);
+    }
+
+    button.photo-frame:focus-visible {
+      outline: 3px solid var(--yellow);
+      outline-offset: 3px;
+    }
+
+    button.photo-frame:disabled {
+      cursor: default;
+    }
+
+    /* Modal foto capitán */
+    .photo-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      padding-top: max(20px, env(safe-area-inset-top));
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+    }
+
+    .photo-modal[hidden] {
+      display: none;
+    }
+
+    .photo-modal__backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(13, 33, 55, 0.82);
+      backdrop-filter: blur(6px);
+      animation: modal-fade 0.25s ease;
+    }
+
+    .photo-modal__content {
+      position: relative;
+      z-index: 1;
+      width: min(92vw, 340px);
+      animation: modal-pop 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes modal-fade {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    @keyframes modal-pop {
+      from { opacity: 0; transform: scale(0.88); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .photo-modal__frame {
+      border-radius: 20px;
+      overflow: hidden;
+      border: 4px solid var(--yellow);
+      box-shadow: 0 0 0 4px var(--red), 0 20px 60px rgba(0, 0, 0, 0.35);
+      background: var(--white);
+    }
+
+    .photo-modal__frame img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 70dvh;
+      object-fit: contain;
+    }
+
+    .photo-modal__caption {
+      margin-top: 12px;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--white);
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .photo-modal__close {
+      position: absolute;
+      top: -12px;
+      right: -8px;
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 50%;
+      background: var(--red);
+      color: var(--white);
+      font-size: 1.4rem;
+      line-height: 1;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+      display: grid;
+      place-items: center;
+      z-index: 2;
+    }
+
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    /* Pantalla de bienvenida (inicio) */
+    body.welcome-active {
+      overflow: hidden;
+    }
+
+    body.welcome-active .scene {
+      filter: blur(4px);
+      transform: scale(0.985);
+      transition: filter 0.45s ease, transform 0.45s ease;
+    }
+
+    body.welcome-active .scene,
+    body.welcome-active .scene * {
+      animation-play-state: paused !important;
+    }
+
+    .welcome-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: grid;
+      place-items: center;
+      padding: 24px 20px;
+      padding-top: max(24px, env(safe-area-inset-top));
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
+      background: linear-gradient(165deg, var(--sky-light) 0%, var(--sky) 45%, var(--sky-deep) 100%);
+    }
+
+    .welcome-modal[hidden] {
+      display: none;
+    }
+
+    .welcome-modal__inner {
+      width: min(92vw, 360px);
+      text-align: center;
+      animation: welcome-in 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes welcome-in {
+      from { opacity: 0; transform: translateY(24px) scale(0.94); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .welcome-modal__photo {
+      width: clamp(120px, 34vw, 156px);
+      height: clamp(120px, 34vw, 156px);
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      border: 4px solid var(--yellow);
+      box-shadow: 0 0 0 4px var(--red), 0 16px 40px rgba(26, 58, 82, 0.28);
+      overflow: hidden;
+      background: var(--white);
+    }
+
+    .welcome-modal__photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .welcome-modal__badge {
+      display: inline-block;
+      background: var(--red);
+      color: var(--white);
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+
+    .welcome-modal__title {
+      font-size: clamp(1.35rem, 6vw, 1.65rem);
+      font-weight: 900;
+      color: var(--white);
+      text-shadow: 0 2px 10px rgba(26, 58, 82, 0.25);
+      line-height: 1.15;
+      margin-bottom: 10px;
+    }
+
+    .welcome-modal__msg {
+      font-size: clamp(0.88rem, 3.8vw, 0.98rem);
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.95);
+      line-height: 1.4;
+      max-width: 300px;
+      margin: 0 auto 22px;
+    }
+
+    .welcome-modal__btn {
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      background: linear-gradient(180deg, var(--yellow) 0%, var(--yellow-dark) 100%);
+      border: none;
+      border-radius: 999px;
+      padding: 14px 28px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(26, 58, 82, 0.22);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .welcome-modal__btn:active {
+      transform: scale(0.97);
+    }
+
+    .welcome-modal__btn:focus-visible {
+      outline: 3px solid var(--white);
+      outline-offset: 3px;
+    }
+
+    /* Música de fondo */
+    .yt-player-host {
+      position: fixed;
+      width: 200px;
+      height: 200px;
+      left: -9999px;
+      top: 0;
+      border: 0;
+      opacity: 0.01;
+      pointer-events: none;
+    }
+
+    .music-btn.is-loading {
+      opacity: 0.65;
+      animation: music-spin 0.8s linear infinite;
+    }
+
+    @keyframes music-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .music-btn {
+      position: fixed;
+      top: max(12px, env(safe-area-inset-top));
+      right: max(12px, env(safe-area-inset-right));
+      z-index: 50;
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--sky-deep);
+      font-size: 1.15rem;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(26, 58, 82, 0.22);
+      display: grid;
+      place-items: center;
+      transition: transform 0.2s ease, background 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .music-btn.hidden { display: none; }
+
+    .music-btn.is-playing {
+      background: var(--yellow);
+      color: var(--ink);
+      animation: music-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes music-pulse {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.06); }
+    }
+
+    .music-btn:focus-visible {
+      outline: 3px solid var(--yellow);
+      outline-offset: 2px;
+    }
+
     @keyframes fade-down {
       from { opacity: 0; transform: translateY(-20px); }
       to   { opacity: 1; transform: translateY(0); }
@@ -887,14 +1193,15 @@
     </header>
 
     <div class="captain-spot">
-      <div class="photo-frame">
+      <button type="button" class="photo-frame" id="photo-trigger" disabled aria-label="Ver foto ampliada del capitán Jacobo">
         <div class="photo-inner">
           <img id="foto-jacobo" src="jacobo.png" alt="Jacobo" hidden />
           <div class="photo-placeholder" id="foto-placeholder">J</div>
         </div>
         <span class="photo-badge" aria-hidden="true">✈</span>
-      </div>
+      </button>
       <span class="photo-caption">Capitán de vuelo</span>
+      <span class="photo-hint hidden" id="photo-hint">Tocá la foto para ampliar</span>
     </div>
 
     <div class="pass-container">
@@ -989,6 +1296,36 @@
     <p class="share-hint" id="share-hint">Usá generar.html para personalizar cada invitado</p>
   </div>
 
+  <!-- Bienvenida inicial -->
+  <div class="welcome-modal" id="welcome-modal" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+    <div class="welcome-modal__inner">
+      <div class="welcome-modal__photo">
+        <img id="welcome-photo" src="jacobo.png" alt="Jacobo — Capitán del vuelo" />
+      </div>
+      <span class="welcome-modal__badge">✈ Abordaje autorizado</span>
+      <h2 class="welcome-modal__title" id="welcome-title">¡Bienvenido a bordo!</h2>
+      <p class="welcome-modal__msg" id="welcome-msg">El Capitán Jacobo te espera para celebrar sus 3 años.</p>
+      <button type="button" class="welcome-modal__btn" id="welcome-start">¡Subir a bordo! ✈</button>
+    </div>
+  </div>
+
+  <!-- Modal foto ampliada -->
+  <div class="photo-modal" id="photo-modal" hidden role="dialog" aria-modal="true" aria-labelledby="photo-modal-title">
+    <div class="photo-modal__backdrop" id="photo-modal-backdrop"></div>
+    <div class="photo-modal__content">
+      <button type="button" class="photo-modal__close" id="photo-modal-close" aria-label="Cerrar">×</button>
+      <div class="photo-modal__frame">
+        <img id="photo-modal-img" src="" alt="Jacobo — Capitán del vuelo" />
+      </div>
+      <p class="photo-modal__caption" id="photo-modal-title">Capitán Jacobo ✈</p>
+    </div>
+  </div>
+
+  <!-- Audio local (preferido) + fallback YouTube -->
+  <audio id="audio-fondo" class="yt-player-host" loop preload="auto"></audio>
+  <iframe id="yt-fallback" class="yt-player-host" title="Música de fondo" allow="autoplay; encrypted-media" hidden></iframe>
+  <button type="button" class="music-btn hidden" id="btn-music" aria-label="Activar música de fondo" title="Música">🎵</button>
+
   <script>
     // ── Datos fijos del cumpleaños (editá acá si cambia algo) ──
     const CONFIG = {
@@ -1004,6 +1341,9 @@
       avionImagen: "avion.png",
       avionInvertido: false,
       fotoJacobo: "jacobo.png",
+      audioMp3: "musica.mp3",
+      audioInicio: 2.5,
+      youtubeUrl: "https://youtu.be/4k2jUj93wxE",
     };
 
     const params = new URLSearchParams(window.location.search);
@@ -1081,15 +1421,19 @@
       }
     })();
 
-    // Foto de Jacobo (jacobo.jpg / jacobo.png / jacobo.webp)
+    // Foto de Jacobo + modal ampliada
     (function initFoto() {
       const img = document.getElementById("foto-jacobo");
       const placeholder = document.getElementById("foto-placeholder");
+      const trigger = document.getElementById("photo-trigger");
+      const hint = document.getElementById("photo-hint");
       const candidatos = [CONFIG.fotoJacobo, "jacobo.png", "jacobo.webp", "jacobo.jpeg"];
 
       function mostrarFoto() {
         placeholder.hidden = true;
         img.hidden = false;
+        trigger.disabled = false;
+        hint.classList.remove("hidden");
       }
 
       function probar(idx) {
@@ -1101,6 +1445,207 @@
       }
 
       probar(0);
+    })();
+
+    (function initPhotoModal() {
+      const trigger = document.getElementById("photo-trigger");
+      const modal = document.getElementById("photo-modal");
+      const modalImg = document.getElementById("photo-modal-img");
+      const source = document.getElementById("foto-jacobo");
+      const closeBtn = document.getElementById("photo-modal-close");
+      const backdrop = document.getElementById("photo-modal-backdrop");
+
+      function abrir() {
+        if (source.hidden || !source.src) return;
+        modalImg.src = source.src;
+        modal.hidden = false;
+        document.body.classList.add("modal-open");
+        closeBtn.focus();
+      }
+
+      function cerrar() {
+        modal.hidden = true;
+        document.body.classList.remove("modal-open");
+        trigger.focus();
+      }
+
+      trigger.addEventListener("click", abrir);
+      closeBtn.addEventListener("click", cerrar);
+      backdrop.addEventListener("click", cerrar);
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !modal.hidden) cerrar();
+      });
+    })();
+
+    // Música: MP3 local (funciona en WhatsApp) o YouTube como respaldo
+    window.InvitacionAudio = (function initMusica() {
+      function idDesdeYoutube(url) {
+        if (!url || !url.trim()) return "";
+        const limpio = url.trim();
+        if (/^[a-zA-Z0-9_-]{11}$/.test(limpio)) return limpio;
+        const match = limpio.match(
+          /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/))([a-zA-Z0-9_-]{11})/
+        );
+        return match ? match[1] : "";
+      }
+
+      const videoId = idDesdeYoutube(CONFIG.youtubeUrl);
+      const btn = document.getElementById("btn-music");
+      const audio = document.getElementById("audio-fondo");
+      const ytFrame = document.getElementById("yt-fallback");
+      const inicioSeg = Number(CONFIG.audioInicio) || 0;
+
+      if (!CONFIG.audioMp3 && !videoId) {
+        return { listo: () => false, reproducirDesde: async () => {}, pausar: () => {}, alternar: async () => {}, mostrarControl: () => {} };
+      }
+
+      let modo = null;
+      let listo = false;
+      let sonando = false;
+
+      function mostrarControl() {
+        btn.classList.remove("hidden");
+      }
+
+      function marcarEstado(reproduciendo) {
+        sonando = reproduciendo;
+        btn.classList.remove("is-loading");
+        btn.classList.toggle("is-playing", reproduciendo);
+        btn.setAttribute(
+          "aria-label",
+          reproduciendo ? "Pausar música de fondo" : "Activar música de fondo"
+        );
+        btn.title = reproduciendo ? "Pausar música" : "Activar música";
+      }
+
+      async function reproducirDesde(segundos) {
+        if (!listo) return;
+        const inicio = Math.max(0, segundos);
+        try {
+          if (modo === "mp3") {
+            if (audio.readyState < 1) {
+              await new Promise((resolve) => {
+                audio.addEventListener("loadedmetadata", resolve, { once: true });
+              });
+            }
+            audio.currentTime = inicio;
+            await audio.play();
+          } else if (modo === "youtube") {
+            ytFrame.hidden = false;
+            ytFrame.src =
+              `https://www.youtube-nocookie.com/embed/${videoId}` +
+              `?autoplay=1&start=${Math.floor(inicio)}&loop=1&playlist=${videoId}` +
+              `&controls=0&playsinline=1&rel=0&modestbranding=1`;
+          }
+          marcarEstado(true);
+        } catch {
+          marcarEstado(false);
+          throw new Error("play-failed");
+        }
+      }
+
+      function pausar() {
+        if (modo === "mp3") {
+          audio.pause();
+        } else if (modo === "youtube") {
+          ytFrame.src = "about:blank";
+          ytFrame.hidden = true;
+        }
+        marcarEstado(false);
+      }
+
+      async function alternar() {
+        if (!listo) {
+          btn.classList.add("is-loading");
+          return;
+        }
+        try {
+          if (sonando) {
+            pausar();
+          } else {
+            if (modo === "mp3") {
+              if (audio.currentTime < inicioSeg) audio.currentTime = inicioSeg;
+              await audio.play();
+              marcarEstado(true);
+            } else {
+              await reproducirDesde(inicioSeg);
+            }
+          }
+        } catch {
+          marcarEstado(false);
+        }
+      }
+
+      function activarMp3() {
+        modo = "mp3";
+        listo = true;
+        audio.volume = 0.4;
+      }
+
+      function activarYoutube() {
+        if (!videoId) return;
+        modo = "youtube";
+        listo = true;
+      }
+
+      btn.addEventListener("click", alternar);
+
+      if (CONFIG.audioMp3) {
+        audio.src = CONFIG.audioMp3;
+        audio.addEventListener("canplaythrough", activarMp3, { once: true });
+        audio.addEventListener("error", activarYoutube, { once: true });
+      } else {
+        activarYoutube();
+      }
+
+      return { listo: () => listo, reproducirDesde, pausar, alternar, mostrarControl };
+    })();
+
+    // Pantalla de bienvenida → cierra, anima invitación y arranca música
+    (function initWelcome() {
+      const welcome = document.getElementById("welcome-modal");
+      const btnStart = document.getElementById("welcome-start");
+      const welcomePhoto = document.getElementById("welcome-photo");
+      const welcomeMsg = document.getElementById("welcome-msg");
+      const fotoJacobo = document.getElementById("foto-jacobo");
+      const inicioSeg = Number(CONFIG.audioInicio) || 0;
+
+      document.body.classList.add("welcome-active");
+
+      if (invitado) {
+        welcomeMsg.textContent = `¡Hola ${invitado}! El Capitán Jacobo te invita a celebrar sus 3 años.`;
+      }
+
+      function syncFotoWelcome() {
+        if (fotoJacobo.src && !fotoJacobo.hidden) {
+          welcomePhoto.src = fotoJacobo.src;
+        }
+      }
+
+      fotoJacobo.addEventListener("load", syncFotoWelcome);
+      if (fotoJacobo.complete && fotoJacobo.naturalWidth > 0) syncFotoWelcome();
+
+      async function comenzar() {
+        welcome.hidden = true;
+        document.body.classList.remove("welcome-active");
+
+        const audioCtrl = window.InvitacionAudio;
+
+        function intentarMusica(intentos) {
+          if (audioCtrl.listo()) {
+            audioCtrl.reproducirDesde(inicioSeg)
+              .then(() => audioCtrl.mostrarControl())
+              .catch(() => audioCtrl.mostrarControl());
+          } else if (intentos < 40) {
+            setTimeout(() => intentarMusica(intentos + 1), 100);
+          }
+        }
+
+        intentarMusica(0);
+      }
+
+      btnStart.addEventListener("click", comenzar);
+      btnStart.focus();
     })();
 
     // Código de barras Code 128 (estilo boarding pass real)
