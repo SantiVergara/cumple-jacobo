@@ -48,11 +48,12 @@
     .content-stack {
       position: relative;
       z-index: 2;
-      flex: 1;
+      flex: 0 1 auto;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: clamp(6px, 1.2vh, 12px);
+      justify-content: flex-start;
+      gap: clamp(4px, 1vh, 10px);
       padding:
         max(10px, env(safe-area-inset-top))
         16px
@@ -226,7 +227,7 @@
       position: relative;
       z-index: 2;
       text-align: center;
-      padding: clamp(36px, 8vh, 64px) 4px 0;
+      padding: clamp(28px, 5.5vh, 44px) 4px 0;
       flex-shrink: 0;
       animation: fade-down 1s ease-out 0.3s both;
     }
@@ -275,6 +276,7 @@
       z-index: 8;
       text-align: center;
       flex-shrink: 0;
+      margin: 0;
       animation: captain-in 1s cubic-bezier(0.22, 1, 0.36, 1) 0.85s both;
     }
 
@@ -343,7 +345,8 @@
 
     .photo-caption {
       display: block;
-      margin-top: 7px;
+      margin-top: 5px;
+      margin-bottom: 0;
       font-size: 0.62rem;
       font-weight: 800;
       letter-spacing: 0.14em;
@@ -590,7 +593,13 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .welcome-modal__btn:active {
+    .welcome-modal__btn:disabled {
+      opacity: 0.72;
+      cursor: wait;
+      transform: none;
+    }
+
+    .welcome-modal__btn:not(:disabled):active {
       transform: scale(0.97);
     }
 
@@ -669,7 +678,7 @@
       width: 100%;
       max-width: 390px;
       z-index: 10;
-      margin-top: auto;
+      margin-top: clamp(8px, 1.6vh, 14px);
       flex-shrink: 0;
       animation: pass-rise 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
     }
@@ -1093,9 +1102,17 @@
     @media (max-height: 640px) {
       .content-stack { gap: 4px; }
       .header { padding-top: 24px; }
+      .pass-container { margin-top: 6px; }
       .photo-badge { width: 26px; height: 26px; font-size: 0.8rem; }
       .airline-name { font-size: 1rem; }
       .pass-type strong { font-size: 0.78rem; }
+    }
+
+    /* Pantallas altas: evitar huecos que crecen con vh */
+    @media (min-height: 780px) {
+      .header { padding-top: 40px; }
+      .content-stack { gap: 8px; }
+      .pass-container { margin-top: 12px; }
     }
   </style>
 </head>
@@ -1322,7 +1339,7 @@
   </div>
 
   <!-- Audio local (preferido) + fallback YouTube -->
-  <audio id="audio-fondo" class="yt-player-host" loop preload="auto"></audio>
+  <audio id="audio-fondo" loop preload="auto" playsinline webkit-playsinline x-webkit-airplay="allow"></audio>
   <iframe id="yt-fallback" class="yt-player-host" title="Música de fondo" allow="autoplay; encrypted-media" hidden></iframe>
   <button type="button" class="music-btn hidden" id="btn-music" aria-label="Activar música de fondo" title="Música">🎵</button>
 
@@ -1496,7 +1513,16 @@
       const inicioSeg = Number(CONFIG.audioInicio) || 0;
 
       if (!CONFIG.audioMp3 && !videoId) {
-        return { listo: () => false, reproducirDesde: async () => {}, pausar: () => {}, alternar: async () => {}, mostrarControl: () => {} };
+        return {
+          listo: () => false,
+          modo: () => null,
+          reproducirDesde: async () => false,
+          reproducirDesdeSync: () => false,
+          pausar: () => {},
+          alternar: async () => {},
+          mostrarControl: () => {},
+          elemento: null,
+        };
       }
 
       let modo = null;
@@ -1519,7 +1545,7 @@
       }
 
       async function reproducirDesde(segundos) {
-        if (!listo) return;
+        if (!listo) return false;
         const inicio = Math.max(0, segundos);
         try {
           if (modo === "mp3") {
@@ -1538,10 +1564,39 @@
               `&controls=0&playsinline=1&rel=0&modestbranding=1`;
           }
           marcarEstado(true);
+          return true;
         } catch {
           marcarEstado(false);
-          throw new Error("play-failed");
+          return false;
         }
+      }
+
+      /** iOS/Android: play() debe llamarse en el mismo toque, sin await previo */
+      function reproducirDesdeSync(segundos) {
+        if (!listo || modo !== "mp3") return false;
+        const inicio = Math.max(0, segundos);
+        audio.volume = 0.4;
+
+        function aplicarInicio() {
+          if (audio.readyState >= 1) {
+            try { audio.currentTime = inicio; } catch { /* ignorar */ }
+          }
+        }
+
+        aplicarInicio();
+        const promesa = audio.play();
+        marcarEstado(true);
+
+        if (promesa && typeof promesa.then === "function") {
+          promesa
+            .then(() => aplicarInicio())
+            .catch(() => marcarEstado(false));
+        }
+        return true;
+      }
+
+      function avisarListo() {
+        document.dispatchEvent(new CustomEvent("invitacion-audio-lista"));
       }
 
       function pausar() {
@@ -1580,25 +1635,39 @@
         modo = "mp3";
         listo = true;
         audio.volume = 0.4;
+        avisarListo();
       }
 
       function activarYoutube() {
         if (!videoId) return;
         modo = "youtube";
         listo = true;
+        avisarListo();
       }
 
       btn.addEventListener("click", alternar);
 
       if (CONFIG.audioMp3) {
         audio.src = CONFIG.audioMp3;
-        audio.addEventListener("canplaythrough", activarMp3, { once: true });
+        audio.load();
+        const marcarMp3 = () => { if (!listo) activarMp3(); };
+        audio.addEventListener("canplay", marcarMp3, { once: true });
+        audio.addEventListener("canplaythrough", marcarMp3, { once: true });
         audio.addEventListener("error", activarYoutube, { once: true });
       } else {
         activarYoutube();
       }
 
-      return { listo: () => listo, reproducirDesde, pausar, alternar, mostrarControl };
+      return {
+        listo: () => listo,
+        modo: () => modo,
+        reproducirDesde,
+        reproducirDesdeSync,
+        pausar,
+        alternar,
+        mostrarControl,
+        elemento: audio,
+      };
     })();
 
     // Pantalla de bienvenida → cierra, anima invitación y arranca música
@@ -1609,12 +1678,27 @@
       const welcomeMsg = document.getElementById("welcome-msg");
       const fotoJacobo = document.getElementById("foto-jacobo");
       const inicioSeg = Number(CONFIG.audioInicio) || 0;
+      const audioCtrl = window.InvitacionAudio;
+      let comenzado = false;
 
       document.body.classList.add("welcome-active");
+      btnStart.disabled = true;
+      btnStart.textContent = "Preparando vuelo…";
 
       if (invitado) {
         welcomeMsg.textContent = `¡Hola ${invitado}! El Capitán Jacobo te invita a celebrar sus 3 años.`;
       }
+
+      function habilitarBoton() {
+        btnStart.disabled = false;
+        btnStart.textContent = "¡Subir a bordo! ✈";
+      }
+
+      document.addEventListener("invitacion-audio-lista", habilitarBoton, { once: true });
+      if (audioCtrl.listo()) habilitarBoton();
+      setTimeout(() => {
+        if (btnStart.disabled) habilitarBoton();
+      }, 12000);
 
       function syncFotoWelcome() {
         if (fotoJacobo.src && !fotoJacobo.hidden) {
@@ -1625,25 +1709,41 @@
       fotoJacobo.addEventListener("load", syncFotoWelcome);
       if (fotoJacobo.complete && fotoJacobo.naturalWidth > 0) syncFotoWelcome();
 
-      async function comenzar() {
+      // Desbloqueo temprano en iOS (primer toque en la pantalla)
+      welcome.addEventListener("touchstart", () => {
+        const a = audioCtrl.elemento;
+        if (!a || audioCtrl.modo() !== "mp3") return;
+        a.play()
+          .then(() => {
+            a.pause();
+            if (a.readyState >= 1) a.currentTime = inicioSeg;
+          })
+          .catch(() => {});
+      }, { once: true, passive: true });
+
+      function comenzar() {
+        if (comenzado) return;
+        comenzado = true;
+
         welcome.hidden = true;
         document.body.classList.remove("welcome-active");
 
-        const audioCtrl = window.InvitacionAudio;
-
-        function intentarMusica(intentos) {
-          if (audioCtrl.listo()) {
-            audioCtrl.reproducirDesde(inicioSeg)
-              .then(() => audioCtrl.mostrarControl())
-              .catch(() => audioCtrl.mostrarControl());
-          } else if (intentos < 40) {
-            setTimeout(() => intentarMusica(intentos + 1), 100);
-          }
+        // play() sincrónico en el mismo toque — obligatorio en móvil
+        if (audioCtrl.listo() && audioCtrl.modo() === "mp3") {
+          audioCtrl.reproducirDesdeSync(inicioSeg);
+          audioCtrl.mostrarControl();
+        } else if (audioCtrl.listo() && audioCtrl.modo() === "youtube") {
+          audioCtrl.reproducirDesde(inicioSeg);
+          audioCtrl.mostrarControl();
+        } else {
+          audioCtrl.mostrarControl();
         }
-
-        intentarMusica(0);
       }
 
+      btnStart.addEventListener("touchend", (e) => {
+        e.preventDefault();
+        comenzar();
+      });
       btnStart.addEventListener("click", comenzar);
       btnStart.focus();
     })();
